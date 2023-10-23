@@ -74,7 +74,7 @@ def phi_to_e1_e2(phi, ellipticity, treecorr_convention=True):
     E-W orientation yields gamma1 > 0, gamma2 = 0
     NE-SW orientation yields gamma1 = 0, gamma2 < 0
     NW-SE orientation yields gamma1 = 0, gamma2 > 0
-    With West as the positive (right) x-axis direction!
+    With West as the positive (right) x-axis direction, and the Noth Celestial Pole (NCP) as the positive (up) y-axis direction
 
     Setting treecorr_convention to false introduces a negative sign to the resulting e1, e2 values
 
