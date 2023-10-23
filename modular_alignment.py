@@ -67,6 +67,38 @@ def radially_dependent_satellite_alignment_strength(table, table_keys, Lbox, rad
 
     return alignment_strength_radial_dependence(scaled_r, radial_params)
 
+def phi_to_e1_e2(phi, ellipticity, treecorr_convention=True):
+    """
+    Using the treecorr convention such that:
+    N-S orientation yields gamma1 < 0, gamma2 = 0
+    E-W orientation yields gamma1 > 0, gamma2 = 0
+    NE-SW orientation yields gamma1 = 0, gamma2 < 0
+    NW-SE orientation yields gamma1 = 0, gamma2 > 0
+    With West as the positive (right) x-axis direction!
+
+    Setting treecorr_convention to false introduces a negative sign to the resulting e1, e2 values
+
+    Parameters:
+    -----------
+    phi                     - The position angle as measured counter-clockwise (eastward) from the north celestial pole (NCP)
+    ellipticity             - The full ellipticity to be oriented
+    treecorr_convention     - Whether to adjust to the standard treecorr convention as described above, or negate the values to flip
+
+    Returns:
+    --------
+    e1                      - The e1 (gamma1) shear ellipticity
+    e2                      - The e2 (gamma2) shear ellipticity
+    """
+
+    e1 = -ellipticity * np.cos( 2 * phi )
+    e2 = -ellipticity * np.sin( 2 * phi )
+    
+    if not treecorr_convention:
+        e1 = -e1
+        e2 = -e2
+    
+    return e1, e2
+
 ##################################################################################################################################################################################################
 ##### Alignment Modules ##########################################################################################################################################################################
 ##################################################################################################################################################################################################
