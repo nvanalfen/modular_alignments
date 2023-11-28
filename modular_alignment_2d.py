@@ -1,6 +1,6 @@
 import numpy as np
 from halotools.empirical_models.ia_models.ia_model_components import alignment_strength
-from .vonmises_distribution import VonMisesHalf
+from vonmises_distribution import VonMisesHalf
 from astropy.utils.misc import NumpyRNGContext
 from halotools.utils.vector_utilities import normalized_vectors
 from halotools.utils.mcrotations import random_unit_vectors_2d
