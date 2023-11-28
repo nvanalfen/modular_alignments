@@ -50,7 +50,8 @@ class VonMisesHalf(rv_continuous):
     
     def _rvs(self, kappa, size=None, max_iter=100, random_state=None):
         
-        kappa = self._cap_alignment_strength(kappa)
+        #kappa = self._cap_alignment_strength(kappa)
+        kappa = np.atleast_1d(kappa)
         if size is None or size == ():
             size = len(kappa)
         if size != 1:
@@ -77,8 +78,8 @@ class VonMisesHalf(rv_continuous):
         with np.errstate(over='ignore'):
             x = np.exp(kappa)
         edge_mask = ((x == np.inf) | (x == 0.0))
-        result[edge_mask & (kappa > 0)] = random_state.choice([0.0,np.pi], size=np.sum(edge_mask & (kappa > 0)))
-        result[edge_mask & (kappa < 0)] = np.pi/2
+        result[edge_mask & (kappa < 0)] = random_state.choice([0.0,np.pi], size=np.sum(edge_mask & (kappa < 0)))
+        result[edge_mask & (kappa > 0)] = np.pi/2
 
         # TODO: Work out the rejection sampling here
 
@@ -88,6 +89,7 @@ class VonMisesHalf(rv_continuous):
         kk = kappa[(~zero_kappa) & (~edge_mask)]  # store subset of k values that still need to be sampled
         mask = np.repeat(False,size)  # mask indicating which k values have a sucessful sample
         mask[zero_kappa] = True
+        mask[edge_mask] = True
 
         while (n_sucess < size) & (n_iter < max_iter):
             x_maxes = np.where( kk > 0, np.pi/2, 0 )                # x values for which the PDF will have its maximum value at a given kappa
