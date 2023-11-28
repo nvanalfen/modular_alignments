@@ -12,9 +12,9 @@ import pyccl
 ###############################################################################
 
 def align_to_axis(major_input_vectors, alignment_strength, prim_gal_axis="A", as_vector=False):
-    assert( ( isinstance(alignment_strength, float) ) or ( isinstance(alignment_strength, np.ndarray) ) )
+    assert( ( isinstance(alignment_strength, int) ) or ( isinstance(alignment_strength, float) ) or ( isinstance(alignment_strength, np.ndarray) ) )
     # Make sure the alignment strengths are in the appropriate form
-    if isinstance( alignment_strength, float ):
+    if ( isinstance(alignment_strength, int) ) or isinstance( alignment_strength, float ):
         alignment_strength = alignment_strength * np.ones( len(major_input_vectors) )
 
     A_v = axes_correlated_with_input_vector(major_input_vectors, p=alignment_strength, as_vector=as_vector)
@@ -58,10 +58,10 @@ def align_angle_to_axis(A_v):
 
 def align_to_tidal_field(sxx, syy, sxy, z, alignment_strength, prim_gal_axis="A", as_vector=False):
 
-    assert( ( isinstance(alignment_strength, float) ) or ( isinstance(alignment_strength, np.ndarray) ) )
+    assert( ( isinstance(alignment_strength, int) ) or ( isinstance(alignment_strength, float) ) or ( isinstance(alignment_strength, np.ndarray) ) )
     
     # Make sure the alignment strengths are in the appropriate form
-    if isinstance( alignment_strength, float ):
+    if isinstance(alignment_strength, int) or isinstance( alignment_strength, float ):
         alignment_strength = alignment_strength * np.ones( len(z) )
 
     phi = tidal_angle(sxx, syy, sxy, z)
