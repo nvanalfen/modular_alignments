@@ -5,13 +5,19 @@ import matplotlib.pyplot as plt
 
 def test_vonmises_perfect_rvs():
     N = 100000
+    mu = -1
+
+    vm = VonMisesHalf()
+    angles = vm.rvs(alignment_strength(mu), size=N)
+
+    assert( (angles == np.pi/2).all() )
+
     mu = 1
 
     vm = VonMisesHalf()
     angles = vm.rvs(alignment_strength(mu), size=N)
 
-    # plt.hist(angles, bins=100)
-    # plt.show()
+    assert( ( (angles == 0) | (angles == np.pi) ).all() )
 
 if __name__ == "__main__":
     print("TESTING")
