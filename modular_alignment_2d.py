@@ -204,21 +204,27 @@ def axes_correlated_with_input_vector(input_vectors, p=0., seed=None, as_vector=
 ##### TIDAL FUNCTIONS #########################################################
 ###############################################################################
 
-def tidal_angle(sxx, syy, sxy, z, domain=(0,np.pi)):
+def tidal_angle(sxx, syy, sxy, z, domain=(0,np.pi), cosmo=None, **kwargs):
     # Parameters here taken from Joachim's notebook
     if not domain is None:
         # If an explicit domain is given, it must be at least pi
         # This allows every angle to be represented (since we have pi symmetry)
         assert( domain[1] - domain[0] >= np.pi )
-    cosmo = pyccl.Cosmology(
-        Omega_c=0.22, Omega_b=0.0448, 
-        h=0.71, sigma8 = 0.801, n_s= 0.963,w0=-1.00,wa=0.0, Omega_k=0.0)
+    
+    if cosmo is None:
+        cosmo = pyccl.Cosmology(
+            Omega_c=0.22, Omega_b=0.0448, 
+            h=0.71, sigma8 = 0.801, n_s= 0.963,w0=-1.00,wa=0.0, Omega_k=0.0)
 
     Om_m = cosmo['Omega_m']
-    rho_crit = pyccl.ccllib.cvar.constants.RHO_CRITICAL
-    Aia=1.0 #1.5,2
-    C2=1.0
-    sigma_epsilon = 0.27
+    # rho_crit = pyccl.ccllib.cvar.constants.RHO_CRITICAL
+    # Aia=1.0 #1.5,2
+    # C2=1.0
+    # sigma_epsilon = 0.27
+    rho_crit = kwargs.get("rho_crit", pyccl.ccllib.cvar.constants.RHO_CRITICAL)
+    Aia = kwargs.get("Aia", 1.0)
+    C2 = kwargs.get("C2", 1.0)
+    sigma_epsilon = kwargs.get("sigma_epsilon", 0.27)
 
     e1 = Epsilon1_NLA(cosmo, z, Aia, rho_crit, sxx, syy)
     e2 = Epsilon2_NLA(cosmo, z, Aia, rho_crit, sxy)
