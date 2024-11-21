@@ -131,7 +131,7 @@ def axes_correlated_with_north(p, seed=None, custom_distr=None):
         else:
             # If a distribution has been given, use it and assume it will properly treat
             # the given p values
-            angles = custom_distr(p, size=npts)
+            angles = custom_distr.rvs(p, size=npts)
 
     return angles
 
