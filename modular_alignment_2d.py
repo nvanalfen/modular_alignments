@@ -1,6 +1,6 @@
 import numpy as np
 from halotools.empirical_models.ia_models.ia_model_components import alignment_strength
-from vonmises_distribution import VonMisesHalf
+from .vonmises_distribution import VonMisesHalf
 from astropy.utils.misc import NumpyRNGContext
 from halotools.utils.vector_utilities import normalized_vectors
 from halotools.utils.mcrotations import random_unit_vectors_2d
@@ -233,7 +233,7 @@ def tidal_angle(sxx, syy, sxy, z, domain=(0,np.pi), cosmo=None, **kwargs):
     phi = np.arctan2(e2, e1)/2
 
     if not domain is None:
-        # If a domain is given, shift the angles to resie within it
+        # If a domain is given, shift the angles to reside within it
         while not ( (phi >= domain[0]) & (phi <= domain[1]) ).all():
             # If the angle is below the domain min or above the domain max,
             # shift by pi in whichever direction
@@ -257,6 +257,6 @@ def Epsilon1_NLA(cosmo,z,A1,rho_crit,sxx,syy):
 def Epsilon2_NLA(cosmo,z,A1,rho_crit,sxy):
     gz = pyccl.growth_factor(cosmo, 1./(1+z))
     Fact = -1*A1*5e-14*rho_crit*cosmo['Omega_m']/gz
-    e2_NLA = 2 *Fact* sxy
+    e2_NLA = Fact* sxy
     return e2_NLA
 
