@@ -11,13 +11,13 @@ import pyccl
 ##### ALIGNMENT FUNCTIONS #####################################################
 ###############################################################################
 
-def align_to_axis(major_input_vectors, alignment_strength, prim_gal_axis="A", as_vector=False):
+def align_to_axis(major_input_vectors, alignment_strength, prim_gal_axis="A", as_vector=False, custom_distr=None):
     assert( ( isinstance(alignment_strength, int) ) or ( isinstance(alignment_strength, float) ) or ( isinstance(alignment_strength, np.ndarray) ) )
     # Make sure the alignment strengths are in the appropriate form
     if ( isinstance(alignment_strength, int) ) or isinstance( alignment_strength, float ):
         alignment_strength = alignment_strength * np.ones( len(major_input_vectors) )
 
-    A_v = axes_correlated_with_input_vector(major_input_vectors, p=alignment_strength, as_vector=as_vector)
+    A_v = axes_correlated_with_input_vector(major_input_vectors, p=alignment_strength, as_vector=as_vector, custom_distr=custom_distr)
 
     if as_vector:
         return align_vector_to_axis(A_v, prim_gal_axis=prim_gal_axis)
@@ -56,7 +56,7 @@ def align_angle_to_axis(A_v):
     
     return A_v
 
-def align_to_tidal_field(sxx, syy, sxy, z, alignment_strength, prim_gal_axis="A", as_vector=False):
+def align_to_tidal_field(sxx, syy, sxy, z, alignment_strength, prim_gal_axis="A", as_vector=False, custom_distr=None):
 
     assert( ( isinstance(alignment_strength, int) ) or ( isinstance(alignment_strength, float) ) or ( isinstance(alignment_strength, np.ndarray) ) )
     
@@ -72,7 +72,7 @@ def align_to_tidal_field(sxx, syy, sxy, z, alignment_strength, prim_gal_axis="A"
         vecs[:,1] = np.sin(phi)
         reference_loc = vecs
         
-    return align_to_axis( reference_loc, alignment_strength, prim_gal_axis=prim_gal_axis, as_vector=as_vector )
+    return align_to_axis( reference_loc, alignment_strength, prim_gal_axis=prim_gal_axis, as_vector=as_vector, custom_distr=custom_distr )
 
 def align_radially():
     pass
@@ -94,7 +94,7 @@ def perpendicular_vector_2d(vecs):
 
     return normal_vecs
 
-def axes_correlated_with_north(p, seed=None):
+def axes_correlated_with_north(p, seed=None, custom_distr=None):
     r"""
     Calculate a list of angles referenced to the North Celestial Pole (NCP).
     Parameters
@@ -117,18 +117,25 @@ def axes_correlated_with_north(p, seed=None):
 
     p = np.atleast_1d(p)
     npts = p.shape[0]
+    angles = None
 
     #with NumpyRNGContext(seed):
     if np.all(p == 0):
         angles = np.random.uniform(0, np.pi, npts)
     else:
-        kappa = alignment_strength(p)
-        vm = VonMisesHalf()
-        angles = vm.rvs(kappa=kappa, size=npts)
+        if custom_distr is None:
+            # Default to using the von Mises distribution and assume the proper p has been given
+            kappa = alignment_strength(p)
+            vm = VonMisesHalf()
+            angles = vm.rvs(kappa=kappa, size=npts)
+        else:
+            # If a distribution has been given, use it and assume it will properly treat
+            # the given p values
+            angles = custom_distr(p, size=npts)
 
     return angles
 
-def axes_correlated_with_input_vector(input_vectors, p=0., seed=None, as_vector=False):
+def axes_correlated_with_input_vector(input_vectors, p=0., seed=None, as_vector=False, custom_distr=None):
     r"""
     Calculate a list of 2d unit-vectors whose orientation is correlated
     with the orientation of `input_vectors`.
@@ -183,7 +190,7 @@ def axes_correlated_with_input_vector(input_vectors, p=0., seed=None, as_vector=
     # Not sure why. But they do. So I put in this next line
     p = np.atleast_1d(p).astype("float64")
 
-    ncp_correlated_angles = axes_correlated_with_north(p, seed)                 # Get angles correlated to the NCP
+    ncp_correlated_angles = axes_correlated_with_north(p, seed, custom_distr=custom_distr)                 # Get angles correlated to the NCP
     angles = input_values                                                       # Get the given angles. If as_vector is true, adjust in next step
     if as_vector:
         angles = np.arctan2( input_values[:,1], input_values[:,0] )             # Calculate the angles of the given unit vectors
