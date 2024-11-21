@@ -354,6 +354,8 @@ def project_NCP(lines_of_sight):
     """
     ncp = np.array([0,0,1])
     ncp = np.tile( ncp, len(lines_of_sight) ).reshape( len(lines_of_sight), 3 )
+    mags = np.linalg.norm( lines_of_sight, axis=1 )
+    ncp = ncp * mags[:, np.newaxis]
 
     projected_ncp = project_onto_plane( ncp, lines_of_sight )
     
