@@ -437,6 +437,13 @@ def get_position_angle(orientations, radians=True):
     # e.g. anything pointing NW also has a side pointing SE, report the SE angle from NCP
     position_angles[ signs > 0 ] = np.pi - position_angles[ signs > 0 ]
 
+    # Check for zero orientations
+    null_mask = ( orientations[:,0] == 0 ) & ( orientations[:,1] == 0 )
+    if sum(null_mask) > 0:
+        position_angles[null_mask] = np.random.uniform(0, np.pi, sum(null_mask))
+        msg = ('{0} vectors have zero orientation. Their position angles will be assigned randomly'.format(int(sum(null_mask))))
+        warn(msg)
+
     if not radians:
         return position_angles * (180/np.pi)
     return position_angles
